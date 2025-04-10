@@ -1,0 +1,111 @@
+{% extends 'base.html' %} {% block title %}Questions{% endblock %} {% block
+content %}
+
+<!-- Search & Tag Filter Form -->
+<form method="get" class="mb-4 p-3 bg-white rounded shadow-sm border">
+  <div class="row g-3 align-items-center">
+    <div class="col-md-5">
+      <input
+        type="text"
+        name="search"
+        class="form-control form-control-lg"
+        placeholder="🔍 Search questions..."
+        value="{{ search_query }}"
+      />
+    </div>
+    <div class="col-md-5">
+      <strong>Filtered by tags:</strong>
+      <select
+        name="tag"
+        class="form-select select2"
+        multiple="multiple"
+        data-placeholder="🏷️ Filter by tags"
+      >
+        {% for tag in tags %}
+        <option
+          value="{{ tag.name }}"
+          {%
+          if
+          tag.name
+          in
+          selected_tags
+          %}selected{%
+          endif
+          %}
+        >
+          {{ tag.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 text-end">
+      <button type="submit" class="btn btn-success w-100">
+        <i class="bi bi-funnel-fill"></i> Filter
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- Ask Button -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Questions</h2>
+  <a href="{% url 'post_question' %}" class="btn btn-success">+ Ask Question</a>
+</div>
+
+<!-- Questions List -->
+{% for question in questions %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h5 class="card-title">{{ question.title }}</h5>
+    <p class="card-text">{{ question.body|truncatewords:30 }}</p>
+    <p class="text-muted mb-2">
+      Asked by {% if user == question.user %}
+      <span class="badge bg-primary">You</span>
+      {% else %} {{ question.user.username }} {% endif %} on {{
+      question.created_at|date:"M d, Y H:i" }}
+    </p>
+    {% if question.tags.exists %}
+    <div class="mb-2">
+      {% for tag in question.tags.all %}
+      <span class="badge bg-secondary">{{ tag.name }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <a
+      href="{% url 'question_detail' question.id %}"
+      class="btn btn-outline-primary btn-sm"
+      >View Answers</a
+    >
+  </div>
+</div>
+{% empty %}
+<p>No questions posted yet.</p>
+{% endfor %}
+
+<!-- Pagination -->
+<div class="mt-4">
+  {% if page_obj.has_previous %}
+  <a
+    href="?page={{ page_obj.previous_page_number }}{% for tag in selected_tags %}&tag={{ tag }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}"
+    class="btn btn-outline-secondary"
+    >Previous</a
+  >
+  {% endif %} {% if page_obj.has_next %}
+  <a
+    href="?page={{ page_obj.next_page_number }}{% for tag in selected_tags %}&tag={{ tag }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}"
+    class="btn btn-outline-secondary"
+    >Next</a
+  >
+  {% endif %}
+</div>
+
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $('select[name="tag"]').select2({
+      placeholder: "Filter by tags",
+      width: "100%",
+    });
+  });
+</script>
+{% endblock %}

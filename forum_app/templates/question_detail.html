@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% block title %}{{ question.title }}{% endblock %} {%
+block content %}
+<div class="container mt-4">
+  <!-- ✅ Question Block -->
+  <div class="card shadow-sm mb-4 rounded-4">
+    <div class="card-body">
+      <h2 class="card-title">{{ question.title }}</h2>
+      <p class="card-text">{{ question.body }}</p>
+      <p class="text-muted">
+        Posted by
+        <strong>
+          {% if question.user == user %}You{% else %}{{ question.user.username
+          }}{% endif %}
+        </strong>
+        on {{ question.created_at|date:"M d, Y H:i" }}
+      </p>
+
+      <!-- ✅ Tags display -->
+      {% if question.tags.exists %}
+      <div class="mb-2">
+        {% for tag in question.tags.all %}
+        <span class="badge bg-secondary">{{ tag.name }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ✅ Answer Block -->
+  <div class="mb-4">
+    <h4>Answers</h4>
+    {% if answers %} {% for answer in answers %}
+    <div class="answer mb-3">
+      <p>{{ answer.body }}</p>
+      <p class="text-muted mb-1">
+        —
+        <strong>
+          {% if answer.user == user %}You{% else %}{{ answer.user.username }}{%
+          endif %}
+        </strong>
+        on {{ answer.created_at|date:"M d, Y H:i" }}
+      </p>
+
+      {% if user.is_authenticated %} {% if answer.id in liked_answer_ids %}
+      <form
+        action="{% url 'like_answer' answer.id %}"
+        method="post"
+        style="display: inline"
+      >
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning btn-sm">
+          Unlike ({{ answer.likes.count }})
+        </button>
+      </form>
+      {% else %}
+      <form
+        action="{% url 'like_answer' answer.id %}"
+        method="post"
+        style="display: inline"
+      >
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+          Like ({{ answer.likes.count }})
+        </button>
+      </form>
+      {% endif %} {% else %}
+      <small>Likes: {{ answer.likes.count }}</small>
+      {% endif %}
+    </div>
+    <hr />
+    {% endfor %} {% else %}
+    <p>No answers yet. Be the first to answer!</p>
+    {% endif %}
+  </div>
+
+  <!-- ✅ Answer Form -->
+  {% if user.is_authenticated %}
+  <div class="card shadow-sm rounded-4">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Post Your Answer</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Submit Answer</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info" role="alert">
+    <a href="{% url 'login' %}" class="alert-link">Login</a> to post an answer.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
