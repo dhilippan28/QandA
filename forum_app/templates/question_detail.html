@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% block title %}{{ question.title }}{% endblock %} {%
-block content %}
+{% extends 'base.html' %} {% block title %}{{ question.title }}{% endblock %} 
+{% block content %}
 <div class="container mt-4">
   <!-- ✅ Question Block -->
   <div class="card shadow-sm mb-4 rounded-4">
@@ -9,8 +9,7 @@ block content %}
       <p class="text-muted">
         Posted by
         <strong>
-          {% if question.user == user %}You{% else %}{{ question.user.username
-          }}{% endif %}
+          {% if question.user == user %}You{% else %}{{ question.user.username}}{% endif %}
         </strong>
         on {{ question.created_at|date:"M d, Y H:i" }}
       </p>
@@ -29,46 +28,47 @@ block content %}
   <!-- ✅ Answer Block -->
   <div class="mb-4">
     <h4>Answers</h4>
-    {% if answers %} {% for answer in answers %}
-    <div class="answer mb-3">
-      <p>{{ answer.body }}</p>
-      <p class="text-muted mb-1">
-        —
-        <strong>
-          {% if answer.user == user %}You{% else %}{{ answer.user.username }}{%
-          endif %}
-        </strong>
-        on {{ answer.created_at|date:"M d, Y H:i" }}
-      </p>
+    {% if answers %} 
+     {% for answer in answers %}
+      <div class="answer mb-3">
+        <p>{{ answer.body }}</p>
+        <p class="text-muted mb-1">
+          —
+          <strong>
+            {% if answer.user == user %}You{% else %}{{ answer.user.username }}{% endif %}
+          </strong>
+          on {{ answer.created_at|date:"M d, Y H:i" }}
+        </p>
 
-      {% if user.is_authenticated %} {% if answer.id in liked_answer_ids %}
-      <form
-        action="{% url 'like_answer' answer.id %}"
-        method="post"
-        style="display: inline"
-      >
-        {% csrf_token %}
-        <button type="submit" class="btn btn-warning btn-sm">
-          Unlike ({{ answer.likes.count }})
-        </button>
-      </form>
-      {% else %}
-      <form
-        action="{% url 'like_answer' answer.id %}"
-        method="post"
-        style="display: inline"
-      >
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-          Like ({{ answer.likes.count }})
-        </button>
-      </form>
-      {% endif %} {% else %}
-      <small>Likes: {{ answer.likes.count }}</small>
-      {% endif %}
-    </div>
-    <hr />
-    {% endfor %} {% else %}
+        {% if user.is_authenticated %} {% if answer.id in liked_answer_ids %}
+        <form
+          action="{% url 'like_answer' answer.id %}"
+          method="post"
+          style="display: inline"
+        >
+          {% csrf_token %}
+          <button type="submit" class="btn btn-warning btn-sm">
+            Unlike ({{ answer.likes.count }})
+          </button>
+        </form>
+        {% else %}
+        <form
+          action="{% url 'like_answer' answer.id %}"
+          method="post"
+          style="display: inline"
+        >
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary btn-sm">
+            Like ({{ answer.likes.count }})
+          </button>
+        </form>
+        {% endif %} {% else %}
+        <small>Likes: {{ answer.likes.count }}</small>
+        {% endif %}
+      </div>
+      <hr />
+    {% endfor %} 
+    {% else %}
     <p>No answers yet. Be the first to answer!</p>
     {% endif %}
   </div>

@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% block title %}Questions{% endblock %} {% block
-content %}
+{% extends 'base.html' %} {% block title %}Questions{% endblock %} 
+{% block content %}
 
 <!-- Search & Tag Filter Form -->
 <form method="get" class="mb-4 p-3 bg-white rounded shadow-sm border">
@@ -21,21 +21,14 @@ content %}
         multiple="multiple"
         data-placeholder="🏷️ Filter by tags"
       >
-        {% for tag in tags %}
-        <option
-          value="{{ tag.name }}"
-          {%
-          if
-          tag.name
-          in
-          selected_tags
-          %}selected{%
-          endif
-          %}
-        >
-          {{ tag.name }}
-        </option>
-        {% endfor %}
+      {% for tag in tags %}
+      <option
+        value="{{ tag.name }}"
+        {% if tag.name in selected_tags %}selected{% endif %}
+      >
+        {{ tag.name }}
+      </option>
+    {% endfor %}
       </select>
     </div>
     <div class="col-md-2 text-end">
@@ -61,8 +54,7 @@ content %}
     <p class="text-muted mb-2">
       Asked by {% if user == question.user %}
       <span class="badge bg-primary">You</span>
-      {% else %} {{ question.user.username }} {% endif %} on {{
-      question.created_at|date:"M d, Y H:i" }}
+      {% else %} {{ question.user.username }} {% endif %} on {{ question.created_at|date:"M d, Y H:i" }}
     </p>
     {% if question.tags.exists %}
     <div class="mb-2">
@@ -99,7 +91,8 @@ content %}
   {% endif %}
 </div>
 
-{% endblock %} {% block extra_scripts %}
+{% endblock %} 
+{% block extra_scripts %}
 <script>
   $(document).ready(function () {
     $('select[name="tag"]').select2({
