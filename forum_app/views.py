@@ -7,6 +7,8 @@ from .models import Question, Tag, Answer, Like, Notification
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db.models import Q
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 def register_view(request):
@@ -160,6 +162,19 @@ def like_answer(request, answer_id):
                 user=answer.user,
                 message=f"{request.user.username} liked your answer.",
                 question=answer.question  # assuming the Notification model has a FK to Question
+            )
+            unread_count = Notification.objects.filter(user=answer.user, is_read=False).count()
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"user_{answer.user.id}",
+                {
+                    "type": "send_notification",
+                    "content": {
+                        "message": f"{request.user.username} liked your answer",
+                        "data":{ "unread_count": unread_count},
+                        "url": f"/questions/{answer.question.id}/"
+                    }
+                }
             )
 
     return redirect('question_detail', question_id=answer.question.id)

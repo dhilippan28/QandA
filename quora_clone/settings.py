@@ -27,6 +27,15 @@ SECRET_KEY = 'django-insecure-(t^4%g9g^$79mf24j6^6e=wuw3bo9oj1@a1d7(n0n^1$v8!_ye
 DEBUG = True
 
 ALLOWED_HOSTS = []
+ASGI_APPLICATION = 'quora_clone.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # Application definition
@@ -38,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'forum_app'
 ]
 
@@ -125,3 +135,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True

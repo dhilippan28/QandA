@@ -10,21 +10,22 @@
   {% if notifications %}
   <ul class="list-group shadow-sm rounded">
     {% for notification in notifications %}
-    <li
-      class="list-group-item d-flex justify-content-between align-items-start {% if not notification.is_read %}bg-secondary{% endif %}"
-    >
-      <div>
-        <a
-          href="{% url 'read_notification_redirect' notification.id %}"
-          class="text-decoration-none"
-        >
-          {{ notification.message }}
-        </a>
-        <div class="text-muted small mt-1">
-          {{ notification.created_at|date:"M d, Y H:i" }}
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="d-flex align-items-center">
+        {% if not notification.is_read %}
+          <span class="dot bg-danger me-2"></span>
+        {% endif %}
+        <div>
+          <a href="{% url 'read_notification_redirect' notification.id %}" class="text-decoration-none">
+            {{ notification.message }}
+          </a>
+          <div class="text-muted small mt-1">
+            {{ notification.created_at|date:"M d, Y H:i" }}
+          </div>
         </div>
       </div>
     </li>
+    
     {% endfor %}
   </ul>
 

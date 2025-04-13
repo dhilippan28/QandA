@@ -17,6 +17,13 @@
             right: 20px;
             z-index: 1050;
         }
+        .dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            }
+
     </style>
 </head>
 <body>
@@ -34,20 +41,9 @@
 
     <!-- Notification Dropdown -->
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            Notifications {% if unread_notification_count %}<span class="badge bg-danger">{{ unread_notification_count }}</span>{% endif %}
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" href="{% url 'notifications' %}">
+            Notifications {% if unread_notification_count %}<span class="badge bg-danger" id="unread-count">{{ unread_notification_count }}</span>{% endif %}
         </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow">
-            {% if notifications %}
-                {% for n in notifications %}
-                    <li><span class="dropdown-item small">{{ n.message }}</span></li>
-                {% endfor %}
-            {% else %}
-                <li><span class="dropdown-item small text-muted">No notifications</span></li>
-            {% endif %}
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-center" href="{% url 'notifications' %}">View All</a></li>
-        </ul>
     </li>
 
     <li class="nav-item">
@@ -98,6 +94,22 @@
                 window.location.reload();
             }
         });
+    </script>
+    <script>
+        
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
+    
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("New message received:", data);
+            // Update the notification count or display a message
+            const unreadCountElement = document.getElementById('unread-count');
+            console.log("Unread count element:", unreadCountElement);
+            console.log(unreadCountElement.innerText);
+            if (unreadCountElement) {
+                unreadCountElement.innerHTML =data&&data.data&& data.data.unread_count&&data.data.unread_count>0 ? data.data.unread_count : "";
+            }         
+        };
     </script>
     
     
