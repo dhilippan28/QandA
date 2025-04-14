@@ -131,6 +131,20 @@ def question_detail(request, question_id):
                     question=question,
                     message=f"{request.user.username} answered your question '{question.title}'"
                 )
+                unread_count = Notification.objects.filter(user=question.user, is_read=False).count()
+                print(f"Unread count: {unread_count}")
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"user_{question.user.id}",
+                    {
+                        "type": "send_notification",
+                        "content": {
+                            "message": f"{request.user.username} answered your question",
+                            "data":{ "unread_count": unread_count},
+                            "url": f"/questions/{answer.question.id}/"
+                        }
+                    }
+                )
             messages.success(request, "Your answer has been posted!")
             return redirect('question_detail', question_id=question.id)
     else:

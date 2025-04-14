@@ -101,11 +101,8 @@
     
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            console.log("New message received:", data);
             // Update the notification count or display a message
             const unreadCountElement = document.getElementById('unread-count');
-            console.log("Unread count element:", unreadCountElement);
-            console.log(unreadCountElement.innerText);
             if (unreadCountElement) {
                 unreadCountElement.innerHTML =data&&data.data&& data.data.unread_count&&data.data.unread_count>0 ? data.data.unread_count : "";
             }         
