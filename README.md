@@ -58,5 +58,5 @@ pip install -r requirements.txt
 ### 4. Run the Development Server
 
 ```bash
-python manage.py runserver
+python run.py
 ```
